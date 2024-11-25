@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+
 import {
   Table,
   TableBody,
@@ -8,7 +9,8 @@ import {
   TableRow,
   Paper,
   Button,
-  Box
+  Box,
+  TablePagination
 } from '@mui/material';
 import { configService } from '../../services/configService';
 import { useNavigate } from 'react-router-dom';
@@ -16,14 +18,21 @@ import { useNavigate } from 'react-router-dom';
 const ConfigList = () => {
   const [configs, setConfigs] = useState([]);
   const navigate = useNavigate();
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(20);
+  const [totalElements, setTotalElements] = useState(0);
 
   useEffect(() => {
     loadConfigs();
-  }, []);
+  }, [page, pageSize]);
 
   const loadConfigs = async () => {
     try {
-      const response = await configService.getConfigs();
+      const response = await configService.getConfigs({
+        page: page,
+        size: pageSize,
+        sort: 'group,asc' // optional sorting
+      });
       setConfigs(response.data.content);
     } catch (error) {
       console.error('Error loading configs:', error);
@@ -55,6 +64,7 @@ const ConfigList = () => {
         <Table>
           <TableHead>
             <TableRow>
+              <TableCell>No.</TableCell>
               <TableCell>Group</TableCell>
               <TableCell>Type</TableCell>
               <TableCell>Key</TableCell>
@@ -64,8 +74,9 @@ const ConfigList = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {configs.map((config) => (
+            {configs.map((config, index) => (
               <TableRow key={config.configID}>
+                <TableCell>{index + 1}</TableCell>
                 <TableCell>{config.group}</TableCell>
                 <TableCell>{config.type}</TableCell>
                 <TableCell>{config.configKey}</TableCell>
@@ -89,6 +100,18 @@ const ConfigList = () => {
             ))}
           </TableBody>
         </Table>
+        <TablePagination
+          component="div"
+          count={totalElements}
+          page={page}
+          onPageChange={(event, newPage) => setPage(newPage)}
+          rowsPerPage={pageSize}
+          onRowsPerPageChange={(event) => {
+            setPageSize(parseInt(event.target.value, 10));
+            setPage(0);
+          }}
+          rowsPerPageOptions={[10, 20, 50, 100]}
+        />
       </TableContainer>
     </Box>
   );

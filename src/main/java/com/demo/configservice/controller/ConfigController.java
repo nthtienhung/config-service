@@ -1,29 +1,10 @@
 package com.demo.configservice.controller;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.demo.configservice.dto.request.ConfigRequest;
 import com.demo.configservice.dto.response.ConfigResponse;
 import com.demo.configservice.dto.response.MessageResponse;
 import com.demo.configservice.entity.Status;
 import com.demo.configservice.service.ConfigService;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -32,6 +13,17 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+import static com.demo.configservice.constant.ApiMessage.*;
 
 @RestController
 @RequestMapping("/api/v1/config")
@@ -106,12 +98,12 @@ public class ConfigController {
                                             "}")
                             }))
     })
-    @PostMapping("/")
     @SecurityRequirement(name = "Bearer Authentication")
+    @PostMapping("/")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ConfigResponse> addConfig(@Valid @RequestBody ConfigRequest request) {
-        ConfigResponse response = configService.addConfig(request);
-        return ResponseEntity.ok(response);
+//        ConfigResponse response = configService.addConfig(request);
+        return ResponseEntity.ok(configService.addConfig(request));
     }
 
     @Operation(summary = "Update an existing configuration")
@@ -180,14 +172,14 @@ public class ConfigController {
                                             "}")
                             }))
     })
+    @SecurityRequirement(name = "Bearer Authentication")
     @PutMapping("/update/{configId}")
     @PreAuthorize("hasRole('ADMIN')")
-    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<ConfigResponse> updateConfig(
             @PathVariable UUID configId,
             @Valid @RequestBody ConfigRequest request) {
-        ConfigResponse response = configService.updateConfig(configId, request);
-        return ResponseEntity.ok(response);
+//        ConfigResponse response = configService.updateConfig(configId, request);
+        return ResponseEntity.ok(configService.updateConfig(configId, request));
     }
 
     @Operation(summary = "Get Configurations")
@@ -255,15 +247,15 @@ public class ConfigController {
                                     "}")))
     })
     @GetMapping("/getconfig")
-    @PreAuthorize("hasRole('ADMIN')")
     @SecurityRequirement(name = "Bearer Authentication")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<MessageResponse<Page<ConfigResponse>>> getActiveConfigs(
             @RequestParam(required = false) String group,
             @RequestParam(required = false) String type,
             @RequestParam(required = false) String configKey,
             @RequestParam(required = false) Status status,
             Pageable pageable) {
-        Page<ConfigResponse> response = configService.getActiveConfigs(group, type, configKey, status, pageable);
+        Page<ConfigResponse> response = configService.getConfigs(group, type, configKey, status, pageable);
         MessageResponse<Page<ConfigResponse>> messageResponse = MessageResponse.<Page<ConfigResponse>>builder()
                 .message("Success")
                 .status((short) 200)
@@ -303,10 +295,10 @@ public class ConfigController {
                                     "}")))
     })
     @DeleteMapping("/delete/{configId}")
-    @PreAuthorize("hasRole('ADMIN')")
     @SecurityRequirement(name = "Bearer Authentication")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ConfigResponse> deleteConfig(@PathVariable UUID configId) {
-        ConfigResponse response = configService.deleteConfig(configId);
-        return ResponseEntity.ok(response);
+//        ConfigResponse response = configService.deleteConfig(configId);
+        return ResponseEntity.ok(configService.deleteConfig(configId));
     }
 }

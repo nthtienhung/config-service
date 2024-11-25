@@ -39,7 +39,7 @@ public class AuthController {
 
             // Trả về response JSON
             Map<String, String> response = new HashMap<>();
-            response.put("token", "Bearer " + token);
+            response.put("token", token);
             response.put("username", userDetails.getUsername());
 
             return ResponseEntity.ok(response);
