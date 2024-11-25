@@ -1,0 +1,30 @@
+server:
+  port: 8081  # Port for Config Service
+
+jwt:
+    secret : 0aPglnnROU/zGjIuvAA32LpDzmqEY2O7J4fgQ4Eh+4KuJaSCXQIFQgBv6a69Pvkt
+
+spring:
+  application:
+    name: Configuration Service
+
+  datasource:
+    url: jdbc:postgresql://localhost:1200/postgres
+    username: postgres
+    password: quang232003
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+  openapi:
+    path: /swagger-ui.html
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/  # URL for Eureka Server
+    register-with-eureka: true
+    fetch-registry: true
+
+

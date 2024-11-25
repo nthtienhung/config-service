@@ -1,0 +1,29 @@
+CREATE TABLE IF NOT EXISTS configservice.config
+(
+    configid uuid NOT NULL,
+    "group" character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    type character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    key character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    value character(20) COLLATE pg_catalog."default",
+    status character varying(10) COLLATE pg_catalog."default" NOT NULL,
+    create_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    created_by character(32) COLLATE pg_catalog."default",
+    update_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    updated_by character(32) COLLATE pg_catalog."default",
+    CONSTRAINT config_pkey PRIMARY KEY (configid),
+    CONSTRAINT config_status_check CHECK (status::text = ANY (ARRAY['ACTIVE'::character varying, 'INACTIVE'::character varying]::text[]))
+);
+
+CREATE OR REPLACE FUNCTION update_timestamp()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.update_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER before_update_trigger
+BEFORE UPDATE ON configservice.config
+FOR EACH ROW
+EXECUTE FUNCTION update_timestamp();
+
