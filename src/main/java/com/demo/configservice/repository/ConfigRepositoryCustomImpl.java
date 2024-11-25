@@ -44,7 +44,7 @@ public class ConfigRepositoryCustomImpl implements ConfigRepositoryCustom {
         }
 
         baseQuery += " LIMIT " + pageable.getPageSize() + " OFFSET " + pageable.getOffset();
-        baseQuery += " ORDER BY \"group\" ASC LIMIT " + pageable.getPageSize() + " OFFSET " + pageable.getOffset();
+        // baseQuery += " ORDER BY \"group\" ASC LIMIT " + pageable.getPageSize() + " OFFSET " + pageable.getOffset();
         
         List<Config> configs = jdbcTemplate.query(baseQuery, params.toArray(), new BeanPropertyRowMapper<>(Config.class));
         long total = jdbcTemplate.queryForObject("SELECT count(*) FROM configservice.config WHERE 1=1", Long.class);
