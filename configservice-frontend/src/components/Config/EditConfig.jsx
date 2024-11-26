@@ -27,14 +27,33 @@ const EditConfig = () => {
   useEffect(() => {
     const fetchConfig = async () => {
       try {
-        const response = await configService.getConfigs({ id });
-        setConfig(response.data);
+        const response = await configService.getConfigById(id);
+        console.log("this is response data ",response.data);
+        // Check the actual structure of response.data
+        // const configData = response.data?.content?.[2] || response.data?.data || response;
+        // const configData = response.data;
+        const configData = response.data.content.find(
+          (item) => item.configID === id
+        );
+        setConfig({
+          group: configData.group || '',
+          type: configData.type || '',
+          configKey: configData.configKey || '', 
+          configValue: configData.configValue || '',
+          status: configData.status || 'ACTIVE'
+        });
+        
       } catch (error) {
         console.error('Error fetching config:', error);
+        alert('Failed to load configuration');
         navigate('/configs');
       }
     };
-    fetchConfig();
+    
+    if (id) {
+      fetchConfig();
+    }
+    // fetchConfig();
   }, [id, navigate]);
 
   const handleChange = (e) => {
@@ -45,6 +64,13 @@ const EditConfig = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const configData = {
+        group: config.group,
+        type: config.type,
+        key: config.configKey, // Transform configKey to key
+        value: config.configValue, // Transform configValue to value
+        status: config.status
+      };
       await configService.updateConfig(id, config);
       navigate('/configs');
     } catch (error) {

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Store your JWT token
-TOKEN="eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczMjUyOTYzOSwiZXhwIjoxNzMyNTY1NjM5fQ.gq61qU3eNOz4VYMqaXcQqcMKAtgCgICy2cFcW9oGZpk"
+TOKEN="eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTczMjU5MDAyNywiZXhwIjoxNzMyNjI2MDI3fQ.brbEyFBMRlHh9Zmf6xaobYIlRLikG-KNxeK-VU0c-0o"
 
 for i in {1..100}
 do
@@ -14,9 +14,9 @@ do
     -H "Authorization: Bearer $TOKEN" \
     -d "{
     \"group\": \"group$i\",
-    \"type\": \"type\",
-    \"configKey\": \"key\",
-    \"configValue\": \"value\"
+    \"type\": \"type$i\",
+    \"configKey\": \"key$i\",
+    \"configValue\": \"value$i\"
   }"
 
   echo -e "\n"
