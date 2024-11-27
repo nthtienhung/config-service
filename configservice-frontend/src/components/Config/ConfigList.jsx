@@ -10,7 +10,11 @@ import {
   Paper,
   Button,
   Box,
-  TablePagination
+  TablePagination,
+  FormControl, 
+  InputLabel, 
+  Select, 
+  MenuItem
 } from '@mui/material';
 import { configService } from '../../services/configService';
 import { useNavigate } from 'react-router-dom';
@@ -21,19 +25,20 @@ const ConfigList = () => {
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(20);
   const [totalElements, setTotalElements] = useState(0);
-
+  const [sortOption, setSortOption] = useState('create_at,desc'); // Default to newest first
   useEffect(() => {
     loadConfigs();
-  }, [page, pageSize]);
+  }, [page, pageSize, sortOption]);
 
   const loadConfigs = async () => {
     try {
       const response = await configService.getConfigs({
         page: page,
         size: pageSize,
-        sort: 'group,asc' // optional sorting
+        sort: sortOption // optional sorting
       });
       setConfigs(response.data.content);
+      setTotalElements(response.data.totalElements); 
     } catch (error) {
       console.error('Error loading configs:', error);
     }
@@ -52,14 +57,33 @@ const ConfigList = () => {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Button
-        variant="contained"
-        color="primary"
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+      <Button 
+        variant="contained" 
+        color="primary" 
         onClick={() => navigate('/configs/add')}
-        sx={{ mb: 2 }}
       >
         Add New Configuration
       </Button>
+
+      <FormControl variant="outlined" sx={{ minWidth: 200 }}>
+        <InputLabel>Sort By</InputLabel>
+        <Select
+          labelId="sort-by-label"
+          id="sort-by-select"
+          value={sortOption}
+          onChange={(e) => {
+            setSortOption(e.target.value);
+            setPage(0);
+          }}
+          label="Sort By"
+        >
+          <MenuItem value="create_at,desc">Newest First</MenuItem>
+          <MenuItem value="create_at,asc">Oldest First</MenuItem>
+          <MenuItem value="group,asc">Name A to Z</MenuItem>
+        </Select>
+      </FormControl>
+    </div>
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -89,12 +113,12 @@ const ConfigList = () => {
                   >
                     Edit
                   </Button>
-                  <Button
+                  {/* <Button
                     onClick={() => handleDelete(config.configID)}
                     color="error"
                   >
                     Delete
-                  </Button>
+                  </Button> */}
                 </TableCell>
               </TableRow>
             ))}
